@@ -22,8 +22,10 @@ build:
   # Read more about steps on our dev center:
   # http://devcenter.wercker.com/docs/steps/index.html
   steps:
+    - npm-install -g grunt-cli
     # A step that executes `npm install` command
     - npm-install
+    - grunt-build
     # A step that executes `npm test` command
     - npm-test
 
