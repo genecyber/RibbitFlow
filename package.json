@@ -38,7 +38,6 @@
     "flow"
   ],
   "dependencies": {
-    "werkergrunt": "git://github.com/wercker/step-grunt.git",
     "basic-auth": "1.0.3",
     "bcrypt": "0.8.5",
     "bcryptjs": "2.3.0",
