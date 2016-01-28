@@ -21,11 +21,11 @@ build:
   # Steps make up the actions in your pipeline
   # Read more about steps on our dev center:
   # http://devcenter.wercker.com/docs/steps/index.html
-  steps:
-    - npm-install -g grunt-cli
+  steps:    
     # A step that executes `npm install` command
     - npm-install
-    - grunt-build
+    - grunt:
+        tasks: build
     # A step that executes `npm test` command
     - npm-test
 

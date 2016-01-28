@@ -38,6 +38,7 @@
     "flow"
   ],
   "dependencies": {
+    "werkergrunt": "git://github.com/wercker/step-grunt.git",
     "basic-auth": "1.0.3",
     "bcrypt": "0.8.5",
     "bcryptjs": "2.3.0",
@@ -50,7 +51,7 @@
     "follow-redirects": "0.0.7",
     "fs-extra": "0.26.0",
     "fs.notify": "0.0.4",
-    "grunt": "0.4.5",
+    "grunt": "^0.4.5",
     "grunt-chmod": "1.1.1",
     "grunt-cli": "0.1.13",
     "grunt-concurrent": "2.0.3",
