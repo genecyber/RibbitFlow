@@ -1,3 +1,6 @@
+/* global headless */
+/* global verbose */
+/* global forcelanding */
 /* global minimal */
 /* global CryptoJS */
 /* global me */
@@ -104,7 +107,7 @@ $(document).ready(function () {
         warn: function(msg) { customLog(msg) }
     }*/
 
-    if ((top.location.origin.indexOf("localhost") < 0 && (top.location.origin.indexOf("staging") < 0) && top.location.origin.indexOf("vault.local") < 0) && document.referrer === "") {
+    if (forcelanding && (top.location.origin.indexOf("localhost") < 0 && (top.location.origin.indexOf("staging") < 0) && top.location.origin.indexOf("vault.local") < 0) && document.referrer === "") {
         location.href=homepageUrl
     }
     if (verbose) console.log(document.referrer)
