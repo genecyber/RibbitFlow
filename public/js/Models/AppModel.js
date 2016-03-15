@@ -120,6 +120,7 @@ function getImportEncrypted(encrypted, password, cb) {
     }
     newtables.privkey.allRecordsArray(function (all) {
         //go over all internal records 
+        console.log("AppModel")
         if (all !== null) {
             $(all).each(function(key, value) {
                 //delete existing identity
@@ -346,7 +347,7 @@ function detectIncognito(cb) {
 
 function setupTableObject(tablename) {
     var obj = {}
-    obj.table = new top.PouchDB(tablename, { auto_compaction: true })
+    obj.table = new top.PouchDB(tablename, { auto_compaction: true ,  adapter: 'localstorage'})
     obj.insert = getupsert(obj.table)
     obj.get = getget(obj.table)
     obj.getOrDefault = getgetOrDefault(obj.table)
@@ -920,9 +921,20 @@ function getCurrentChainId(cb) {
 }
 
 function getCurrentChainKeys(cb) {
+    console.log("here")
     newtables.privkey.allRecordsArray(function(obj){
         var contextNetworkName = bitcore.Networks.defaultNetwork.name
-        var filtered = obj.filter(function(item) {return item.key.network.name === contextNetworkName})        
+        console.log("<br>-------<br>")
+        console.log(obj)
+        console.log("<br>-------<br>")
+        console.log(contextNetworkName)
+        console.log("<br>-------<br>")
+        var filtered
+        try {
+            filtered = obj.filter(function(item) {return item.key.network.name === contextNetworkName})     
+        } catch (e){
+            filtered = []
+        }
         return cb(filtered)
     })
 }

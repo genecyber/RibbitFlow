@@ -1,3 +1,4 @@
+/* global presentSubscribe */
 /* global headless */
 /* global verbose */
 /* global forcelanding */
@@ -2957,6 +2958,7 @@ minimal.login = function (email, password, success) {
     headlessValidateCredentials(email, password, function () {
         var msg = "Login Success!"
         console.log(msg)
+        presentSubscribe()
         if (minimal) {
             $(".out").append(msg + "<br />")
         }

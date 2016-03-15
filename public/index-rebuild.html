@@ -1,0 +1,171 @@
+<script src="js/UI/JQuery/jquery-1.10.2.min.js"></script>
+<script src="js/UI/CircularJson.js"></script>
+<script src="js/Models/Persistance/pouchdb-3.4.0.min.js"></script>
+<script src="js/Models/Persistance/pouchdb.localstorage.js"></script>
+<script src="js/Models/Persistance/pouchdb.transform-pouch.js"></script>
+<script src="js/Models/Persistance/pouchdb.find.js"></script>
+<script src="js/Models/Persistance/pouchdb.upsert.js"></script>
+<script src="js/Models/Persistance/pouch-crypto.js"></script>
+<script src="js/Models/Persistance/store.pouchdb.js"></script>
+<script src="js/UI/qrcode.js"></script>
+
+<script src="js/Models/AppModel.js"></script>
+
+<script src="js/Models/ChatTip.js"></script>
+<script src="js/Models/Peer.js"></script>
+<script src="js/Models/Me.js"></script>
+<script src="js/Models/Identity.js"></script>
+<script src="js/Models/Vault.js"></script>
+
+<script src="js/Crypto/crypto-min.js"></script>
+<script src="js/Crypto/crypto-sha256.js"></script>
+<script src="js/Crypto/crypto-sha256-hmac.js"></script>
+<script src="js/Crypto/ripemd160.js"></script>
+<script src="js/Crypto/aes.js"></script>
+<script src="js/Crypto/ellipticcurve.js"></script>
+<script src="js/Crypto/Bitcore/bitcore.min.js"></script>
+<script src="js/Crypto/Bitcore/bitcore-mnemonic.js"></script>
+<script src="js/Crypto/Bitcore/bitcore-ecies.min.js"></script>
+
+<script src="js/Crypto/Bitcore/bitcore-message.js"></script>
+<script src="js/Crypto/Bitcore/bitcore-p2p.js"></script>
+<script src="js/Crypto/Bitcore/bitcore-explorers-multi.js"></script>
+
+<script src="js/Crypto/ethereum/web3.js"></script>
+<script src="js/Crypto/ethereum/ethereumjs-accounts.js"></script>
+<script src="js/Crypto/ethereum/ethereumjs-tx.js"></script>
+<script src="js/Crypto/ethereum/walletimport.js"></script>
+<div class="out">Identity: </div>
+<div id="qrcode"></div>
+            
+<div class="log"></div>
+<script>
+    var CircularJSON = window.CircularJSON
+    var debug = getQueryParams(document.location.search).debug
+    oldconsole = window.console
+    function customLog(msg) {
+       oldconsole.log("Hooked "+msg)
+       msg = "<br>----------------<br>" + msg
+       
+       $(".log").html($(".log").html() + "\r\n"+msg)
+    }
+    if (debug) {
+        window.console = {
+            log: function(msg) { customLog(CircularJSON.stringify(msg)) },
+            info: function(msg) { customLog(CircularJSON.stringify(msg)) },
+            warn: function(msg) { customLog(CircularJSON.stringify(msg)) }
+        }
+        window.onerror = function(errorMsg, url, lineNumber){
+            console.log("Error: "+ errorMsg + " \r\nScript:  "+ url + "\r\nLine: "+lineNumber)
+        }
+        var cmd = getQueryParams(document.location.search).eval
+        if (cmd)
+            eval(cmd)
+    }
+    
+    accounts = new Accounts({minPassphraseLength: 6});
+    foundIdentity = []
+    bitcore = require('bitcore')
+    Mnemonic = require('bitcore-mnemonic');
+    ECIES = require('bitcore-ecies')
+    explorers = require('bitcore-explorers-multi')
+    var verbose = true
+    bitcore.Networks.AvailableNetworks.set("ethereum")
+    var insight = bitcore.Networks.AvailableNetworks.currentNetwork().insight
+    //console.log(CircularJSON.stringify(me))
+    
+    //Lookup Identity      
+    
+    function isReady(cb){
+        console.log(me.data.privkey)
+        console.log("Ready: "+me.data.privkey.table.taskqueue.isReady)
+        if (me.data.privkey.table.taskqueue.isReady) {
+            return cb()
+        } else {
+            console.log("waiting...")
+            setTimeout(function(){
+                return isReady(cb)
+            },500)
+        }
+    }
+    
+    isReady(function(){
+        lookupIdentity()
+    })
+
+    
+    
+    function lookupIdentity(){
+        console.log(foundIdentity)
+        newtables.privkey.allRecordsArray(function (rows) {
+            if (rows) {
+                $.each(rows, function () {
+                    var record = $(this)[0]
+                    if (!record.isIdentity) {
+                        record.address = record.key.address
+                        foundIdentity.push(record)
+                    }
+                })                              
+            }         
+            createIdentityIfNew(function(identity){
+                $(".out").html(identity.address || identity.key.address)
+            })
+        })
+        //console.log("issue")
+    }
+    
+    function createIdentityIfNew(cb){
+        if (foundIdentity.length < 1) { 
+            me.password = generatePassword()            
+            newtables.privkey.newIdentity("Identity",function(out) {
+                newtables.privkey.allRecordsArray(function (rows) {
+                    $.each(rows, function () {
+                        var record = $(this)[0]
+                        if (record.isIdentity) {
+                            foundIdentity.push(record.key)
+                            newtables.privkey.newHD("EthIdentity", function(record) {
+                                foundIdentity = []
+                                newtables.privkey.allRecordsArray(function (rows) {
+                                    $.each(rows, function () {
+                                        var record = $(this)[0]
+                                        if (!record.isIdentity) {
+                                            $(this)[0].isIdentity = true
+                                            foundIdentity.push(record.key)
+                                            console.log(record)
+                                            getMyMnemonic(me.password,function(mnemonic){
+                                                generateQr(mnemonic+"|"+me.password)
+                                            })
+                                            return cb(record)
+                                        } else {
+                                            //return cb(null)
+                                        }
+                                    })
+                                })
+                            })
+                        }
+                    })
+                })
+            })
+        } else {
+            return cb(foundIdentity[0])
+        }
+    }
+    function generatePassword(){
+        var randomstring = Math.random().toString(36).slice(-8)
+        return randomstring
+    }
+    function getQueryParams(qs) {
+        qs = qs.split('+').join(' ')
+        var params = {}, tokens, re = /[?&]?([^=]+)=([^&]*)/g
+        while (tokens = re.exec(qs)) {
+            params[decodeURIComponent(tokens[1])] = decodeURIComponent(tokens[2])
+        }
+        return params;
+    }
+
+    
+    
+    
+    
+    
+</script>
