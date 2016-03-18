@@ -22,11 +22,11 @@ var clone = require("clone");
 
 var defaultContext = {
     page: {
-        title: "Ribbit Flow",
+        title: "loyyal Flow",
         favicon: "favicon.ico"
     },
     header: {
-        title: "Ribbit Flow",
+        title: "loyyal Flow",
         image: "red/images/node-red.png"
     },
     asset: {

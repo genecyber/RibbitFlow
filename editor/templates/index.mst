@@ -28,6 +28,14 @@
 <link rel="stylesheet" href="vendor/font-awesome/css/font-awesome.min.css">
 <link rel="stylesheet" href="vendor/vendor.css">
 <link rel="stylesheet" href="red/style.min.css">
+<style>
+    #header {
+        height: 51px !important;
+    }
+    #main-container {
+        top: 51px !important;
+    }
+</style>
 {{#page.css}}
 <link rel="stylesheet" href="{{.}}">
 {{/page.css}}
@@ -35,7 +43,9 @@
 </head>
 <body spellcheck="false">
 <div id="header">
-    <span class="logo">{{#header.url}}<a href="{{.}}">{{/header.url}}{{#header.image}}<img src="{{.}}">{{/header.image}} <span>{{ header.title }}</span>{{#header.url}}</a>{{/header.url}}</span>
+    <span class="logo">{{#header.url}}<a href="{{.}}">{{/header.url}}{{#header.image}}
+        <img src="{{.}}">{{/header.image}} 
+        <span>{{ header.title }}</span>{{#header.url}}</a>{{/header.url}}</span>
     <ul class="header-toolbar hide">
         <li><a id="btn-sidemenu" class="button" data-toggle="dropdown" href="#"><i class="fa fa-bars"></i></a></li>
     <ul>

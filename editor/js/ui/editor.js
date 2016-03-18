@@ -1184,7 +1184,8 @@ RED.editor = (function() {
 
         createEditor: function(options) {
             var editor = ace.edit(options.id);
-            editor.setTheme("ace/theme/tomorrow");
+            //editor.setTheme("ace/theme/tomorrow");
+            editor.setTheme("ace/theme/atom_dark")
             var session = editor.getSession();
             if (options.mode) {
                 session.setMode(options.mode);
