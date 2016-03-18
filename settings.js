@@ -22,7 +22,7 @@ module.exports = {
     // the tcp port that the Node-RED web server is listening on
     uiPort: 1880,
     
-    editorTheme: 'ace/theme/atom_dark',
+    //editorTheme: 'ace/theme/atom_dark',
 
     // By default, the Node-RED UI accepts connections on all IPv4 interfaces.
     // The following property can be used to listen on a specific interface. For

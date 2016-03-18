@@ -219,8 +219,8 @@ RED.library = (function() {
         });
 
         libraryEditor = ace.edit('node-select-library-text');
-        //libraryEditor.setTheme("ace/theme/tomorrow");
-        libraryEditor.setTheme("ace/theme/atom_dark")
+        libraryEditor.setTheme("ace/theme/tomorrow");
+        //libraryEditor.setTheme("ace/theme/atom_dark")
         if (options.mode) {
             libraryEditor.getSession().setMode(options.mode);
         }
